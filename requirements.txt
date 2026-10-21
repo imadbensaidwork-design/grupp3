@@ -1,0 +1,7 @@
+# This file lists the versions of the packages that we are using in our project.
+# With this file we ensure that version problems do not occur.
+pandas==3.0.6
+numpy==2.4.6
+matplotlib==3.11.2
+ipykernel==7.4.0
+jupyterlab==4.6.4

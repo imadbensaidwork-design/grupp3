@@ -1,0 +1,15 @@
+# Here is everything we don not need to upload to GitHub. 
+# Everything that is in this files will be ingnored when we push our code to GitHub.
+# Virtual environments
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Local environment variables
+.env
