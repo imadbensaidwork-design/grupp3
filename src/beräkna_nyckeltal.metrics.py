@@ -14,21 +14,19 @@ def order_stat(dataframe):
     revenue_tot = dataframe["revenue"].sum()
     units_tot = dataframe["units"].sum()
     aov = (dataframe["revenue"].sum() / len(dataframe)).round(2)
-    max = dataframe["revenue"].max()
-    median = dataframe["revenue"].median()
-    min = dataframe["revenue"].min()
-    return order_tot, revenue_tot, units_tot, aov, max, median, min
+    revenue_max = dataframe["revenue"].max()
+    revenue_median = dataframe["revenue"].median()
+    revenue_min = dataframe["revenue"].min()
+    return order_tot, revenue_tot, units_tot, aov, revenue_max, revenue_median, revenue_min
 
 # Plockar ut variablerna från funktionen, så kan de användas.
-order_tot, revenue_tot, units_tot, aov, max, median, min = order_stat(df)
+order_tot, revenue_tot, units_tot, aov, revenue_max, revenue_median, revenue_min = order_stat(df)
 
 # Visar hur ordrarna fördelas i olika kostnadsintervall, överst de kostnadsintervall som flest ordrar finns inom:
 # Tar man bort sort_values() visas ordnarna i intervallordning istället.
-buckets = np.linspace(min, max, 20)
+buckets = np.linspace(revenue_min, revenue_max, 20)
 
 revenue_distr = pd.crosstab(
     df["order_id"],
-    pd.cut(df["revenue"], bins=buckets, right=True)
+    pd.cut(df["revenue"], bins=buckets, right=True, include_lowest=True)
 ).sum().sort_values(ascending=False)
-
-# print(revenue_distr)
