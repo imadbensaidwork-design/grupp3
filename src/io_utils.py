@@ -1,4 +1,4 @@
-# HÄR TAR VI FRAM EN FUNKTIONER FÖR ATT KUNNA LÄSA IN CSV-FILEN PÅ OLIKA SÄTT
+# här tar vi fram funktion för att kunna läsa in csv-filen
 import pandas as pd
 
 
