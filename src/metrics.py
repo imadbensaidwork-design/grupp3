@@ -1,23 +1,69 @@
-from pathlib import Path
-projektmapp = Path(__file__).resolve().parent.parent
-csv_fil = projektmapp / "data" / "ecommerce_sales.csv"
+from src.io_utils import load_data, process_data
 
-from io_utils import load_data, process_data # importerar funktioner från io_ituls för att kunna läsa och processa data (source: io_utils.py)
+def monthly_sales(df):
+    """Beräkna försäljning per månad."""
 
-# funktion för att beräkna intäkt per produktkategori, sortera kategorierna och ta fram de tre med högst intäkt
+    monthly = df.groupby(
+        df["date"].dt.to_period("M")
+    )["revenue"].sum()
 
-def revenue_by_category():
+    return monthly
 
-    df = load_data(csv_fil) # läser in csv-filen med funktionen load_data
-    df = process_data(df) # konverterar värden i kolumnen "date" från str till datetime med funktionen process_data 
 
-    revenue_by_category = (
-    df.groupby("category") # grupperar raderna efter produktkategori
-    .agg(totala_intäkter = ("revenue", "sum")) # summerar revenue i varje category, under nya kolumnen "intäkt per produktkategori"
-    .reset_index() # gör category till kolumn istället för index
-    .sort_values("totala_intäkter", ascending = False) # sorterar värderna under "intäkt per produktkategori i fallande ordning"
-    .head(3) # visa första tre
-    .reset_index(drop=True)# 
+def weekly_sales(df):
+    """Beräkna försäljning per vecka."""
+
+    weekly = (
+        df.set_index("date")["revenue"]
+        .resample("W-SUN")
+        .sum()
     )
 
-    return revenue_by_category
+    return weekly
+
+
+def monthly_growth(df):
+    """Beräkna procentuell förändring per månad."""
+
+    monthly = monthly_sales(df)
+
+    growth = monthly.pct_change() * 100
+
+    return growth
+
+
+def sales_trends(df):
+    """Identifiera högsta och lägsta försäljningsmånad."""
+
+    monthly = monthly_sales(df)
+
+    if monthly.empty:
+        return None
+
+    return {
+        "highest_month": str(monthly.idxmax()),
+        "highest_sales": monthly.max(),
+        "lowest_month": str(monthly.idxmin()),
+        "lowest_sales": monthly.min()
+    }
+
+
+if __name__ == "__main__":
+
+    # Läs in CSV-filen via io_utils.py
+    df = load_data("data/ecommerce_sales.csv")
+
+    # Förbered datumkolumnen via io_utils.py
+    df = process_data(df)
+
+    print("\n=== FÖRSÄLJNING PER MÅNAD ===")
+    print(monthly_sales(df))
+
+    print("\n=== FÖRSÄLJNING PER VECKA ===")
+    print(weekly_sales(df))
+
+    print("\n=== MÅNADSFÖRÄNDRING (%) ===")
+    print(monthly_growth(df).round(2))
+
+    print("\n=== FÖRSÄLJNINGSTRENDER ===")
+    print(sales_trends(df))
