@@ -1,11 +1,10 @@
 from src.io_utils import load_data, process_data
 
+
 def monthly_sales(df):
     """Beräkna försäljning per månad."""
 
-    monthly = df.groupby(
-        df["date"].dt.to_period("M")
-    )["revenue"].sum()
+    monthly = df.groupby(df["date"].dt.to_period("M"))["revenue"].sum()
 
     return monthly
 
@@ -13,11 +12,7 @@ def monthly_sales(df):
 def weekly_sales(df):
     """Beräkna försäljning per vecka."""
 
-    weekly = (
-        df.set_index("date")["revenue"]
-        .resample("W-SUN")
-        .sum()
-    )
+    weekly = df.set_index("date")["revenue"].resample("W-SUN").sum()
 
     return weekly
 
@@ -44,7 +39,7 @@ def sales_trends(df):
         "highest_month": str(monthly.idxmax()),
         "highest_sales": monthly.max(),
         "lowest_month": str(monthly.idxmin()),
-        "lowest_sales": monthly.min()
+        "lowest_sales": monthly.min(),
     }
 
 
@@ -67,3 +62,19 @@ if __name__ == "__main__":
 
     print("\n=== FÖRSÄLJNINGSTRENDER ===")
     print(sales_trends(df))
+
+"""Beräkna intäkter per produktkategori."""
+
+
+def revenue_by_category(df):
+    # Grupperar data per kategori
+    categories = (
+        df.groupby("category")["revenue"]
+        .sum()
+        .sort_values(ascending=False)
+        .reset_index()
+    )
+
+    # Byter namn på kolumnerna för tydlighet
+    categories = categories.rename(columns={"revenue": "total_intäkter"})
+    return categories
